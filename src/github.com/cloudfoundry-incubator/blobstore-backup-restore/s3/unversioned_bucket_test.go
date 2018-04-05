@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("S3UnversionedBucket", func() {
+var _ = Describe("UnversionedBucket", func() {
 	Describe("AWS S3 buckets", func() {
 		RunUnversionedBucketTests(
 			"eu-west-1",
@@ -29,7 +29,7 @@ var _ = Describe("S3UnversionedBucket", func() {
 		)
 	})
 
-	Describe("Copy with a big file on AWS", func() {
+	Describe("CopyObject with a big file on AWS", func() {
 		var endpoint string
 		var creds s3.S3AccessKey
 		var preExistingBigFileBucketName string
@@ -46,7 +46,7 @@ var _ = Describe("S3UnversionedBucket", func() {
 			}
 			region = "eu-west-1"
 			preExistingBigFileBucketName = "large-blob-test-bucket-unversioned"
-			destinationBucketName = setUpS3UnversionedBucket("eu-west-1", endpoint, creds)
+			destinationBucketName = setUpUnversionedBucket("eu-west-1", endpoint, creds)
 
 			bucketObjectUnderTest, err = s3.NewBucket(destinationBucketName, region, endpoint, creds)
 			Expect(err).NotTo(HaveOccurred())
@@ -57,7 +57,7 @@ var _ = Describe("S3UnversionedBucket", func() {
 		})
 
 		JustBeforeEach(func() {
-			err = bucketObjectUnderTest.Copy("big_file", "path/to/file",
+			err = bucketObjectUnderTest.CopyObject("big_file", "path/to/file",
 				preExistingBigFileBucketName, region)
 
 		})
@@ -90,7 +90,7 @@ func RunUnversionedBucketTests(liveRegion, backupRegion, endpoint, accessKey, se
 	BeforeEach(func() {
 		creds = s3.S3AccessKey{Id: accessKey, Secret: secretKey}
 
-		liveBucketName = setUpS3UnversionedBucket(liveRegion, endpoint, creds)
+		liveBucketName = setUpUnversionedBucket(liveRegion, endpoint, creds)
 		testFile1 = uploadFile(liveBucketName, endpoint, "path1/file1", "FILE1", creds)
 		testFile2 = uploadFile(liveBucketName, endpoint, "path2/file2", "FILE2", creds)
 	})
@@ -141,14 +141,14 @@ func RunUnversionedBucketTests(liveRegion, backupRegion, endpoint, accessKey, se
 		})
 	})
 
-	Describe("Copy", func() {
+	Describe("CopyObject", func() {
 		var (
 			backedUpFiles    []string
 			backupBucketName string
 		)
 
 		BeforeEach(func() {
-			backupBucketName = setUpS3UnversionedBucket(backupRegion, endpoint, creds)
+			backupBucketName = setUpUnversionedBucket(backupRegion, endpoint, creds)
 
 			bucketObjectUnderTest, err = s3.NewBucket(backupBucketName, backupRegion, endpoint, creds)
 			Expect(err).NotTo(HaveOccurred())
@@ -159,7 +159,7 @@ func RunUnversionedBucketTests(liveRegion, backupRegion, endpoint, accessKey, se
 		})
 
 		JustBeforeEach(func() {
-			err = bucketObjectUnderTest.Copy(
+			err = bucketObjectUnderTest.CopyObject(
 				"path1/file1", "2012_02_13_23_12_02/bucketIdFromDeployment",
 				liveBucketName, liveRegion)
 		})

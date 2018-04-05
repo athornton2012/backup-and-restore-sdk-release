@@ -5,6 +5,7 @@ import "github.com/cloudfoundry-incubator/blobstore-backup-restore/s3"
 //go:generate counterfeiter -o fakes/fake_unversioned_bucket_pair.go . UnversionedBucketPair
 type UnversionedBucketPair interface {
 	Backup(backupLocation string) (BackupBucketAddress, error)
+	Restore(backupLocation string) error
 }
 
 type S3BucketPair struct {
@@ -18,7 +19,7 @@ func (p S3BucketPair) Backup(backupLocation string) (BackupBucketAddress, error)
 		return BackupBucketAddress{}, err
 	}
 	for _, file := range files {
-		err = p.BackupBucket.Copy(file, backupLocation, p.LiveBucket.Name(), p.LiveBucket.RegionName())
+		err = p.BackupBucket.CopyObject(file, backupLocation, p.LiveBucket.Name(), p.LiveBucket.RegionName())
 		if err != nil {
 			return BackupBucketAddress{}, err
 		}
@@ -28,4 +29,8 @@ func (p S3BucketPair) Backup(backupLocation string) (BackupBucketAddress, error)
 		BucketRegion: p.BackupBucket.RegionName(),
 		Path:         backupLocation,
 	}, nil
+}
+
+func (p S3BucketPair) Restore(backupLocation string) error {
+	return nil
 }

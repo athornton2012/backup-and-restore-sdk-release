@@ -47,13 +47,15 @@ var _ = Describe("Backup", func() {
 		})
 
 		By("calling copy for each file in the bucket", func() {
-			Expect(backupBucket.CopyCallCount()).To(Equal(2))
-			expectedKey, expectedDestinationPath, expectedOriginBucketName, expectedOriginBucketRegion := backupBucket.CopyArgsForCall(0)
+			Expect(backupBucket.CopyObjectCallCount()).To(Equal(2))
+			expectedKey, expectedDestinationPath, expectedOriginBucketName, expectedOriginBucketRegion :=
+				backupBucket.CopyObjectArgsForCall(0)
 			Expect(expectedKey).To(Equal("path1/file1"))
 			Expect(expectedDestinationPath).To(Equal("destination-string"))
 			Expect(expectedOriginBucketName).To(Equal("liveBucket"))
 			Expect(expectedOriginBucketRegion).To(Equal("liveBucketRegion"))
-			expectedKey, expectedDestinationPath, expectedOriginBucketName, expectedOriginBucketRegion = backupBucket.CopyArgsForCall(1)
+			expectedKey, expectedDestinationPath, expectedOriginBucketName, expectedOriginBucketRegion =
+				backupBucket.CopyObjectArgsForCall(1)
 			Expect(expectedKey).To(Equal("path2/file2"))
 			Expect(expectedDestinationPath).To(Equal("destination-string"))
 			Expect(expectedOriginBucketName).To(Equal("liveBucket"))
@@ -79,9 +81,9 @@ var _ = Describe("Backup", func() {
 		})
 	})
 
-	Context("when Copy fails", func() {
+	Context("when CopyObject fails", func() {
 		BeforeEach(func() {
-			backupBucket.CopyReturns(fmt.Errorf("cannot copy file"))
+			backupBucket.CopyObjectReturns(fmt.Errorf("cannot copy file"))
 		})
 
 		It("should fail", func() {
