@@ -1,3 +1,5 @@
+#!/bin/bash -eu
+
 # Copyright (C) 2017-Present Pivotal Software, Inc. All rights reserved.
 #
 # This program and the accompanying materials are made available under
@@ -14,27 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-name: azure-blobstore-backup-restorer
+lpass show Shared-PCF-Backup-and-Restore/concourse-secrets --notes > \
+  secrets.yml
 
-templates:
-  backup.erb: bin/bbr/backup
-  containers.json.erb: config/containers.json
-  restore.erb: bin/bbr/restore
+export AZURE_ACCOUNT_NAME="$(bosh-cli int --path=/azure-account-name secrets.yml)"
+export AZURE_ACCOUNT_KEY="$(bosh-cli int --path=/azure-account-key secrets.yml)"
 
-
-packages:
-- azure-blobstore-backup-restorer
-
-properties:
-  enabled:
-    default: false
-    description: "Enable backup and restore scripts in this job"
-  containers:
-    default: {}
-    description: "Hash of buckets to backup/restore to"
-    example: |
-      droplets:
-        name: "the_droplets_bucket"
-        azure_account_name: "AZURE_ACCOUNT_NAME"
-        azure_account_key: "AZURE_ACCOUNT_KEY"
+ginkgo -trace -r -keepGoing --flakeAttempts=2

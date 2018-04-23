@@ -1,6 +1,7 @@
 package system_tests
 
 import (
+	"fmt"
 	"io/ioutil"
 
 	"os"
@@ -62,10 +63,16 @@ var _ = Describe("Azure backup and restore", func() {
 
 		fileContents, err := ioutil.ReadFile(localArtifact.Name())
 
+		fmt.Println(string(fileContents))
+
 		Expect(err).NotTo(HaveOccurred())
 		Expect(fileContents).To(ContainSubstring("\"name\":\"" + containerName + "\""))
 		Expect(fileContents).To(ContainSubstring("\"name\":\"" + fileName1 + "\",\"hash\":\"R1M39xrrgP7eS+jJHBWu1A==\""))
 		Expect(fileContents).To(ContainSubstring("\"name\":\"" + fileName2 + "\",\"hash\":\"L+IcKub+0Og4CXjKqA1/3w==\""))
 		Expect(fileContents).To(ContainSubstring("\"name\":\"" + fileName3 + "\",\"hash\":\"7VBVkm19ll+P6THGtqGHww==\""))
+	})
+
+	FIt("restores successfully", func() {
+		instance.RunOnInstanceAndSucceed("BBR_ARTIFACT_DIRECTORY=" + instanceArtifactDirPath + " /var/vcap/jobs/azure-blobstore-backup-restorer/bin/bbr/restore")
 	})
 })

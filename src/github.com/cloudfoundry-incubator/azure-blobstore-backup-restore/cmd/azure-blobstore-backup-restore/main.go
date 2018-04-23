@@ -10,7 +10,8 @@ import (
 func main() {
 	var artifactFilePath = flag.String("artifact-file", "", "Path to the artifact file")
 	var configFilePath = flag.String("config", "", "Path to JSON config file")
-	var _ = flag.Bool("backup", false, "Run blobstore backup")
+	//var backup = flag.Bool("backup", false, "Run blobstore backup")
+	//var restore = flag.Bool("restore", false, "Run blobstore restore")
 
 	flag.Parse()
 
